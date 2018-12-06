@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="colorPrimary">#3F51B5</color>
+    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorAccent">#FF4081</color>
+
+    <!--底部导航栏选中颜色-->
+    <color name="bottom_item_check">#ED6A2C</color>
+
+    <!--底部导航栏未选中颜色-->
+    <color name="bottom_item_unCheck">#757575</color>
+
+    <!--定位按钮默认颜色-->
+    <color name="floatingActionButton">#ffffff</color>
+    <!--定位按钮点击时颜色-->
+    <color name="floatingActionButton_click">#0000ff</color>
+
+    <!-- 拍照按钮默认颜色 -->
+    <color name="floatTakePhoto">#00ff00</color>
+
+    <!-- 状态栏底色 -->
+    <color name="status_background_color">#242424</color>
+
+    <!-- toolBar背景色 -->
+    <color name="toolBar_background_color">#00cc00</color>
+
+    <!-- 输入框填充色 -->
+    <color name="input_background_color">#000000</color>
+
+</resources>

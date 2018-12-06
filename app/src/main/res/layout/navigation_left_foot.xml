@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#fff">
+
+    <android.support.constraint.Guideline
+        android:id="@+id/navigation_left_foot_guideLine1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5"/>
+
+    <Button
+        android:id="@+id/navigation_left_button1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="登陆"
+        android:onClick="btnLoginAndSign"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintRight_toLeftOf="@id/navigation_left_foot_guideLine1"
+        android:layout_marginRight="20dp"
+        android:background="@drawable/navigation_left_button_shape"/>
+
+    <Button
+        android:id="@+id/navigation_left_button2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="注册"
+        android:onClick="btnLoginAndSign"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toRightOf="@id/navigation_left_foot_guideLine1"
+        android:layout_marginLeft="20dp"
+        android:background="@drawable/navigation_left_button_shape"/>
+
+</android.support.constraint.ConstraintLayout>

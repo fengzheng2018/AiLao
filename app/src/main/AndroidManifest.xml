@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="com.android.ailao">
+
+    <!-- 联网权限 -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <!-- 允许应用程序访问有关网络的信息 -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <!-- 使用OpenGL 2.0 -->
+    <uses-feature
+        android:glEsVersion="0x00020000"
+        android:required="true" />
+    <!-- 允许一个程序访问CellID或WiFi热点来获取粗略的位置 -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- 允许一个程序访问精良位置(如GPS) -->
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+    <!-- 向外部存储写入内容权限 -->
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <!-- 读取外部存储权限 -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <!-- 访问摄像头权限 -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <!-- 访问麦克风 -->
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
+
+    <application
+        android:name=".tools.MyBaseApplication"
+        android:allowBackup="true"
+        android:icon="@mipmap/ic_launcher"
+        android:label="@string/app_name"
+        android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".MainActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- 保存位置、获取保存的位置服务类 -->
+        <service android:name=".services.SaveLocations" />
+
+        <!-- android7以上存储路径获取 -->
+        <provider
+            android:name="android.support.v4.content.FileProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:grantUriPermissions="true">
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/provider_path" />
+        </provider>
+
+        <activity
+            android:name=".CollectionInfoActivity"
+            android:label="@string/title_activity_collection_info"
+            android:theme="@style/AppTheme.NoActionBar">
+        </activity>
+        <activity
+            android:name=".RecordingActivity"
+            android:label="@string/title_activity_recording"
+            android:theme="@style/Theme.AppCompat.NoActionBar">
+        </activity>
+    </application>
+
+</manifest>

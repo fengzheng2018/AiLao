@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<litepal>
+    <!-- 数据库名 -->
+    <dbname value="AiLao" />
+
+    <!-- 数据库版本号 -->
+    <version value="1" />
+
+    <!-- 数据表模型映射 -->
+    <list>
+        <mapping class="com.android.ailao.data.MyLocation"/>
+        <mapping class="com.android.ailao.data.MyRecord"/>
+        <mapping class="com.android.ailao.data.MyPicture"/>
+        <mapping class="com.android.ailao.data.MyVoiceData"/>
+    </list>
+
+    <!--
+        默认内部存储
+        <storage value="external" />
+    -->
+
+</litepal>

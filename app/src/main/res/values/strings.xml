@@ -1,0 +1,17 @@
+<resources>
+    <string name="app_name">AiLao</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="notification_name">哀牢山</string>
+    <string name="notification_description">此通知用于向您显示软件正在工作及软件工作的状态，请始终允许软件弹出此通知，否则，您将无法正确地判断软件是否正常工作</string>
+    <string name="notification_status1">正在监测你的位置&#8230;</string>
+    <string name="notification_status2">正在记录你的位置&#8230;</string>
+    <string name="notification_ticker1">开始监测位置</string>
+    <string name="notification_ticker2">开始记录位置</string>
+    <string name="notification_error_status">服务状态异常，请重新启动软件</string>
+    <string name="notification_error_ticker">服务状态异常</string>
+    <string name="title_activity_collection_info">CollectionInfoActivity</string>
+    <string name="title_activity_recording"> </string>
+</resources>

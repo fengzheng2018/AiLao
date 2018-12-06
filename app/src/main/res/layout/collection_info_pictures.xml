@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="match_parent"
+    android:layout_marginLeft="10dp"
+    android:layout_marginRight="5dp">
+
+    <ImageView
+        android:id="@+id/collection_info_picture_show"
+        android:layout_width="70dp"
+        android:layout_height="wrap_content"
+        android:scaleType="fitCenter"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent" />
+    <ImageView
+        android:id="@+id/collection_info_cancel_img"
+        android:layout_width="20dp"
+        android:layout_height="20dp"
+        android:src="@drawable/picture_cancel"
+        app:layout_constraintTop_toTopOf="@id/collection_info_picture_show"
+        app:layout_constraintRight_toRightOf="@id/collection_info_picture_show" />
+
+    <!-- 添加图片按钮 -->
+    <ImageView
+        android:id="@+id/collection_info_addPicture"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:src="@drawable/add_picture"
+        app:layout_constraintLeft_toRightOf="@id/collection_info_picture_show"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        android:layout_marginLeft="15dp"
+        android:visibility="gone"/>
+
+</android.support.constraint.ConstraintLayout>

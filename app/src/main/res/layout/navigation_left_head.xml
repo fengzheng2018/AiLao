@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/side_nav_bar">
+
+    <!--垂直辅助线，垂直居中-->
+    <android.support.constraint.Guideline
+    android:id="@+id/navigation_left_Guideline1"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:layout_constraintGuide_percent="0.5" />
+
+    <!--水平辅助线，水平居中-->
+    <android.support.constraint.Guideline
+        android:id="@+id/navigation_left_Guideline2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        app:layout_constraintGuide_percent="0.5" />
+
+    <ImageView
+        android:id="@+id/navigation_left_image1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:srcCompat="@mipmap/ic_launcher_round"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/navigation_left_Guideline1"
+        app:layout_goneMarginEnd="20dp"/>
+
+    <TextView
+        android:id="@+id/navigation_left_text1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="人员信息1"
+        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+        app:layout_constraintLeft_toRightOf="@+id/navigation_left_Guideline1"
+        app:layout_constraintBottom_toTopOf="@id/navigation_left_Guideline2" />
+
+    <TextView
+        android:id="@+id/navigation_left_text2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="人员信息2"
+        app:layout_constraintTop_toBottomOf="@id/navigation_left_Guideline2"
+        app:layout_constraintLeft_toRightOf="@+id/navigation_left_Guideline1" />
+
+</android.support.constraint.ConstraintLayout>

@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity">
+
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolBar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@drawable/gradient_color">
+
+        <android.support.constraint.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <ImageView
+                android:id="@+id/helper_goback_img"
+                android:layout_width="30dp"
+                android:layout_height="wrap_content"
+                android:src="@drawable/go_back"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintLeft_toLeftOf="parent"
+                app:layout_constraintTop_toTopOf="parent" />
+
+            <TextView
+                android:id="@+id/helper_goback_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="保存并返回"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                app:layout_constraintLeft_toRightOf="@id/helper_goback_img"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/helper_submit_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="提交"
+                android:textColor="#ffffff"
+                android:textSize="18sp"
+                android:layout_marginRight="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintRight_toRightOf="parent"/>
+
+        </android.support.constraint.ConstraintLayout>
+
+    </android.support.v7.widget.Toolbar>
+
+    <!-- 引入主要界面部分 -->
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/toolBar"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        layout="@layout/collection_info_content"/>
+
+    <!-- 点击时预览大图 -->
+    <ImageView
+        android:id="@+id/collection_info_expendPic"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#00000000"
+        android:scaleType="centerCrop"
+        android:visibility="gone"/>
+
+</android.support.constraint.ConstraintLayout>
