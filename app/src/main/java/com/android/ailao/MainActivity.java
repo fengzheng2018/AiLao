@@ -1,5 +1,6 @@
 package com.android.ailao;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
@@ -20,6 +21,7 @@ import android.widget.Toast;
 import android.widget.ZoomControls;
 
 import com.android.ailao.map.MapConfig;
+import com.android.ailao.permissions.CheckPermissions;
 import com.android.ailao.picture.MyPicture;
 import com.android.ailao.tools.MyBaseApplication;
 import com.esri.arcgisruntime.mapping.view.MapView;
@@ -260,8 +262,17 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                     break;
                 }
                 case R.id.takeVoice:{
-                    Intent intent = new Intent(MainActivity.this,RecordingActivity.class);
-                    startActivityForResult(intent,704);
+                    //先检查权限
+                    CheckPermissions checkStorePermission = new CheckPermissions(MainActivity.this,mContext);
+                    String[] storeAndReadPermissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE};
+                    if(checkStorePermission.checkPermission(storeAndReadPermissions)){
+                        Intent intent = new Intent(MainActivity.this,RecordingActivity.class);
+                        startActivityForResult(intent,704);
+                    }else{
+                        int storeRequestCode = 720;
+                        String storeRational = "没有存储权限不能保存音频文件，现在去授予存储权限？";
+                        checkStorePermission.requestPermissions(storeRational,storeRequestCode,storeAndReadPermissions);
+                    }
                 }
             }
         }
@@ -312,6 +323,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 else{
                     myPicture.deleteImgFile();
                 }
+                break;
+            }
+            case 704:{
+                if(resultCode == RESULT_OK){
+                    Intent collectionInfoActivity = new Intent(MainActivity.this,CollectionInfoActivity.class);
+                    startActivity(collectionInfoActivity);
+                }
+                break;
             }
         }
     }
@@ -334,6 +353,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         switch (requestCode){
             case 101:{
                 mapConfig.showDeviceLocation();
+                break;
+            }
+            case 720:{
+                Intent intent = new Intent(MainActivity.this,RecordingActivity.class);
+                startActivityForResult(intent,704);
                 break;
             }
         }

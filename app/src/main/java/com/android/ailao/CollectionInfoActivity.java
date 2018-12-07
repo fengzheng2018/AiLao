@@ -4,6 +4,7 @@ import android.Manifest;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.media.MediaPlayer;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
@@ -20,17 +21,23 @@ import android.widget.Toast;
 
 import com.android.ailao.data.MyPicture;
 import com.android.ailao.data.MyRecord;
+import com.android.ailao.data.MyVoiceData;
 import com.android.ailao.permissions.CheckPermissions;
 import com.android.ailao.picture.PictureItem;
 import com.android.ailao.picture.PictureRecyclerView;
+import com.android.ailao.voice.VoiceItem;
+import com.android.ailao.voice.VoiceRecyclerView;
 
 import org.litepal.LitePal;
 import org.litepal.crud.callback.FindMultiCallback;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.TimeZone;
 
 public class CollectionInfoActivity extends AppCompatActivity {
 
@@ -43,6 +50,7 @@ public class CollectionInfoActivity extends AppCompatActivity {
     private Context mContext;
 
     private RecyclerView picRecycler;
+    private RecyclerView voiceRecycler;
 
     /**
      * 点击图片时显示的大图
@@ -53,6 +61,11 @@ public class CollectionInfoActivity extends AppCompatActivity {
      * 装载图片的List
      */
     private List<PictureItem> pictureItems;
+
+    /**
+     * 装载声音的list
+     */
+    private List<VoiceItem> voiceItemList;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +87,7 @@ public class CollectionInfoActivity extends AppCompatActivity {
         mContext = CollectionInfoActivity.this;
 
         picRecycler = findViewById(R.id.recycleView_picture);
+        voiceRecycler = findViewById(R.id.collection_info_voice_view);
     }
 
     @Override
@@ -90,6 +104,10 @@ public class CollectionInfoActivity extends AppCompatActivity {
          * 查找图片，若图片存在，显示图片
          */
         queryPictureFromDB();
+        /**
+         * 查找音频文件
+         */
+        queryVoiceFromDB();
     }
 
     /**
@@ -278,6 +296,95 @@ public class CollectionInfoActivity extends AppCompatActivity {
                     }
                 }
             });
+        }
+    }
+
+    /**
+     * 从数据库中查找存在的录音文件
+     */
+    private void queryVoiceFromDB(){
+        /**
+         * 查找未完成的记录
+         */
+        List<MyRecord> myRecords = LitePal.where("isOver=?","1").find(MyRecord.class);
+        if(myRecords.size() > 0) {
+            long recordId = myRecords.get(0).getRecordId();
+            LitePal.where("recordId=?", "" + recordId)
+                    .order("id")
+                    .findAsync(MyVoiceData.class)
+                    .listen(new FindMultiCallback<MyVoiceData>() {
+                        @Override
+                        public void onFinish(List<MyVoiceData> list) {
+                            /**
+                             * 从本地查找录音文件
+                             */
+                            loadVoiceFromLocal(list);
+                        }
+                    });
+        }
+    }
+
+
+    /**
+     * 显示录音文件
+     */
+    private void loadVoiceFromLocal(List<MyVoiceData> list){
+        voiceItemList = new ArrayList<>();
+
+        String voicePath = Environment.getExternalStorageDirectory().getAbsolutePath()
+                + File.separator +"AiLaoShan"+ File.separator + "Voice" +File.separator;
+
+        /**
+         * 循环遍历，获取uri和时间
+         */
+        for(int i=0; i<list.size(); i++){
+            String filePath = voicePath + list.get(i).getVoiceName();
+
+            long time = 0;
+            if(filePath != null){
+                MediaPlayer mediaPlayer = new MediaPlayer();
+                try {
+                    mediaPlayer.setDataSource(filePath);
+                    mediaPlayer.prepare();
+
+                    time = mediaPlayer.getDuration();
+                }catch (IOException e){
+                    e.printStackTrace();
+                }
+            }
+            /**
+             * long型时间转为时分秒格式
+             */
+            SimpleDateFormat dateFormat = new SimpleDateFormat("mm:ss");
+            dateFormat.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
+            String hms = dateFormat.format(time);
+
+            VoiceItem voiceItem = new VoiceItem(filePath,hms);
+
+            voiceItemList.add(voiceItem);
+        }
+
+        /**
+         * 用RecyclerView显示文件
+         */
+        showVoiceInRecycler(voiceItemList);
+    }
+
+    /**
+     * 在RecyclerView中显示音频文件
+     */
+    private void showVoiceInRecycler(List<VoiceItem> list){
+        if(voiceRecycler != null){
+            /**
+             * 设置布局为横向布局
+             */
+            LinearLayoutManager layoutManager = new LinearLayoutManager(mContext);
+            layoutManager.setOrientation(LinearLayoutManager.HORIZONTAL);
+
+            voiceRecycler.setLayoutManager(layoutManager);
+
+            VoiceRecyclerView voiceRecyclerView = new VoiceRecyclerView(list);
+            voiceRecycler.setAdapter(voiceRecyclerView);
         }
     }
 }

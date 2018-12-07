@@ -14,4 +14,9 @@
     <string name="notification_error_ticker">服务状态异常</string>
     <string name="title_activity_collection_info">CollectionInfoActivity</string>
     <string name="title_activity_recording"> </string>
+
+    <string name="voice_exit_configure_title">退出</string>
+    <string name="voice_exit_configure_content">退出后现在的录音文件将不能保存，确定要退出吗？</string>
+    <string name="voice_exit_configure_okBut">确定</string>
+    <string name="voice_exit_configure_cancelBut">取消</string>
 </resources>

@@ -2,13 +2,17 @@ package com.android.ailao;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.AudioFormat;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.NonNull;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.Chronometer;
 import android.widget.ImageView;
@@ -32,8 +36,9 @@ import omrecorder.OmRecorder;
 import omrecorder.PullTransport;
 import omrecorder.PullableSource;
 import omrecorder.Recorder;
+import pub.devrel.easypermissions.EasyPermissions;
 
-public class RecordingActivity extends AppCompatActivity {
+public class RecordingActivity extends AppCompatActivity implements EasyPermissions.PermissionCallbacks{
 
     private Context mContext;
 
@@ -42,11 +47,9 @@ public class RecordingActivity extends AppCompatActivity {
     private ImageView rejectBut;
     private ImageView acceptBut;
     private ImageView startAndStopBut;
-    private ImageView reStartBut;
 
     private Chronometer timerShow;
     private TextView status;
-    private TextView reStartInstructions;
 
     private boolean isStart;
     private boolean isPause;
@@ -65,11 +68,9 @@ public class RecordingActivity extends AppCompatActivity {
         rejectBut = findViewById(R.id.voice_reject);
         acceptBut = findViewById(R.id.voice_accept);
         startAndStopBut = findViewById(R.id.voice_microPhone);
-        reStartBut = findViewById(R.id.voice_reStart);
 
         timerShow = findViewById(R.id.voice_time);
         status = findViewById(R.id.voice_status);
-        reStartInstructions = findViewById(R.id.voice_reStart_instructions);
 
         //是否开始录音
         isStart = false;
@@ -94,7 +95,6 @@ public class RecordingActivity extends AppCompatActivity {
             startAndStopBut.setOnClickListener(clickListener);
             acceptBut.setOnClickListener(clickListener);
             rejectBut.setOnClickListener(clickListener);
-            reStartBut.setOnClickListener(clickListener);
         }else{
             Toast.makeText(mContext,"不能创建音频文件，请检查存储权限",Toast.LENGTH_SHORT).show();
         }
@@ -115,42 +115,27 @@ public class RecordingActivity extends AppCompatActivity {
              * 如果有录音权限
              */
             if(checkPermissions.checkPermission(recordPermission)){
-                /**
-                 * 检查存储权限
-                 */
-                if(isStoreAble()){
-                    switch (v.getId()){
-                        /**
-                         * 麦克风图标点击事件
-                         */
-                        case R.id.voice_microPhone:{
-                            start$pause$Record();
-                            //显示重新开始的视图控件
-                            reStartBut.setVisibility(View.VISIBLE);
-                            reStartInstructions.setVisibility(View.VISIBLE);
-                            break;
-                        }
-                        /**
-                         * 接受图标点击事件
-                         */
-                        case R.id.voice_accept:{
-                            stop$Record();
-                            break;
-                        }
-                        /**
-                         * 放弃图标点击事件
-                         */
-                        case R.id.voice_reject:{
-                            giveUp$Exit();
-                            break;
-                        }
-                        /**
-                         * 重新录音按钮点击监听
-                         */
-                        case R.id.voice_reStart:{
-                            again$Record();
-                            break;
-                        }
+                switch (v.getId()){
+                    /**
+                     * 麦克风图标点击事件
+                     */
+                    case R.id.voice_microPhone:{
+                        start$pause$Record();
+                        break;
+                    }
+                    /**
+                     * 接受图标点击事件
+                     */
+                    case R.id.voice_accept:{
+                        stop$Record();
+                        break;
+                    }
+                    /**
+                     * 放弃图标点击事件
+                     */
+                    case R.id.voice_reject:{
+                        giveUp$Exit();
+                        break;
                     }
                 }
             }else{
@@ -215,7 +200,11 @@ public class RecordingActivity extends AppCompatActivity {
      */
     private void stop$Record(){
         try{
-            recorder.stopRecording();
+            if(recorder != null){
+                recorder.stopRecording();
+                isStart = false;
+                isPause = false;
+            }
         }catch (IOException e){
             e.printStackTrace();
         }
@@ -288,26 +277,6 @@ public class RecordingActivity extends AppCompatActivity {
     }
 
     /**
-     * 重新开始录音
-     */
-    private void again$Record(){
-        if(isStart){
-            try {
-                recorder.stopRecording();
-            }catch (IOException e){
-                e.printStackTrace();
-            }
-        }
-
-        if(voiceFileName != null){
-            delete$voiceFile(voiceFileName);
-        }
-
-        //重新开始
-        start$pause$Record();
-    }
-
-    /**
      * 放弃录音并退出
      */
     private void giveUp$Exit(){
@@ -315,6 +284,8 @@ public class RecordingActivity extends AppCompatActivity {
         if(isStart){
             try{
                 recorder.stopRecording();
+                isStart = false;
+                isPause = false;
             }catch (IOException e){
                 e.printStackTrace();
             }
@@ -349,7 +320,6 @@ public class RecordingActivity extends AppCompatActivity {
     private void setupRecorder() {
         File voiceFile = file();
         if(voiceFile != null){
-            Log.e("fz","voiceFile不为空");
             recorder = OmRecorder.wav(
                     new PullTransport.Default(mic(), new PullTransport.OnAudioChunkPulledListener() {
                         @Override
@@ -413,21 +383,85 @@ public class RecordingActivity extends AppCompatActivity {
 
 
     /**
-     * 检查存储权限
+     * 按返回键时确认退出
      */
-    private boolean isStoreAble(){
-        boolean isAble = false;
-
-        String[] storeAndReadPermissions = {Manifest.permission.WRITE_EXTERNAL_STORAGE,Manifest.permission.READ_EXTERNAL_STORAGE};
-        CheckPermissions checkPermissions = new CheckPermissions(RecordingActivity.this,mContext);
-        if(checkPermissions.checkPermission(storeAndReadPermissions)){
-            isAble = true;
-        }else{
-            int storeRequestCode = 701;
-            String storeRational = "没有存储权限不能保存音频文件，现在去授予存储权限？";
-            checkPermissions.requestPermissions(storeRational,storeRequestCode,storeAndReadPermissions);
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event){
+        if(keyCode == KeyEvent.KEYCODE_BACK && event.getRepeatCount() == 0){
+            if(isStart){
+                AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(mContext);
+                alertDialogBuilder.setTitle(R.string.voice_exit_configure_title)
+                        .setMessage(R.string.voice_exit_configure_content)
+                        .setCancelable(true)
+                        .setPositiveButton(R.string.voice_exit_configure_okBut, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                giveUp$Exit();
+                            }
+                        })
+                        .setNegativeButton(R.string.voice_exit_configure_cancelBut, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //
+                            }
+                        });
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                alertDialog.show();
+            }
         }
+        return super.onKeyDown(keyCode,event);
+    }
 
-        return isAble;
+
+    /**
+     * 当允许权限时
+     */
+    @Override
+    public void onPermissionsGranted(int requestCode, @NonNull List<String> perms) {
+        switch (requestCode){
+            case 701:{
+                recorder = null;
+                setupRecorder();
+
+                Log.e("fz","已同意权限");
+
+                ButClickListener clickListener = new ButClickListener();
+
+                startAndStopBut.setOnClickListener(clickListener);
+                acceptBut.setOnClickListener(clickListener);
+                rejectBut.setOnClickListener(clickListener);
+                break;
+            }
+        }
+    }
+
+    /**
+     * 当拒绝权限时
+     */
+    @Override
+    public void onPermissionsDenied(int requestCode, @NonNull List<String> perms) {
+        Intent intent = new Intent();
+        RecordingActivity.this.setResult(RESULT_CANCELED,intent);
+        finish();
+    }
+
+    /**
+     * 重写onRequestPermissionsResult方法，用于接收请求结果
+     */
+    @Override
+    public void onRequestPermissionsResult(int requestCode,
+                                           @NonNull String[] permissions, @NonNull int[] grantResults){
+        super.onRequestPermissionsResult(requestCode,permissions,grantResults);
+        EasyPermissions.onRequestPermissionsResult(requestCode,permissions,grantResults,this);
+    }
+
+    @Override
+    protected void onDestroy(){
+        super.onDestroy();
+
+        timer = null;
+        recorder = null;
+        isStart = false;
+        isPause = false;
     }
 }
