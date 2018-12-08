@@ -102,7 +102,7 @@ public class PictureRecyclerView extends RecyclerView.Adapter<PictureRecyclerVie
     /**
      * 声明一个点击接口
      */
-    public static interface OnItemClickListener{
+    public interface OnItemClickListener{
         void onItemClick(View view,int position);
     }
 }

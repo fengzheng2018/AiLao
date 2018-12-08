@@ -2,11 +2,17 @@ package com.android.ailao;
 
 import android.Manifest;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.media.MediaPlayer;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.v4.content.FileProvider;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -385,6 +391,113 @@ public class CollectionInfoActivity extends AppCompatActivity {
 
             VoiceRecyclerView voiceRecyclerView = new VoiceRecyclerView(list);
             voiceRecycler.setAdapter(voiceRecyclerView);
+
+            //固定Item大小
+            voiceRecycler.setHasFixedSize(true);
+
+            /**
+             * 添加事件点击监听
+             */
+            voiceRecyclerView.setOnItemClickListener(new VoiceRecyclerView.OnItemClickListener() {
+                @Override
+                public void onItemClick(View view, int position) {
+                    if(voiceItemList != null && voiceItemList.get(position) != null){
+                        File file = new File(voiceItemList.get(position).getVoiceUri());
+
+                        if(file != null){
+                            /**
+                             * 构造打开音频的Intent
+                             */
+                            Intent intent = new Intent(Intent.ACTION_VIEW);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            intent.putExtra("oneshot",0);
+                            intent.putExtra("configchange",0);
+                            intent.setDataAndType(getVoiceFileUri(intent,file),"audio/x-wav");
+
+                            startActivity(intent);
+                        }else{
+                            Toast.makeText(mContext,"打开文件出错，文件不存在或被删除",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                }
+            });
+
+            /**
+             * 长按事件监听
+             */
+            voiceRecyclerView.setOnItemLongClickListener(new VoiceRecyclerView.OnItemLongClickListener() {
+                @Override
+                public void OnItemLongClickListener(View view, int position) {
+                    voiceDeleteFile(position);
+                }
+            });
+        }
+    }
+
+
+    /**
+     * 为适配7及以上系统，生成Uri
+     */
+    private Uri getVoiceFileUri(Intent intent,File file){
+        Uri uri = null;
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N){
+            uri = FileProvider.getUriForFile(mContext,
+                    mContext.getPackageName()+".provider",file);
+            intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        }else {
+            uri = Uri.fromFile(file);
+        }
+        return uri;
+    }
+
+
+    /**
+     * 音频文件长按弹出对话框提示删除
+     */
+    private void voiceDeleteFile(int i){
+        if(voiceItemList != null && voiceItemList.get(i) != null){
+            /**
+             * 字符串处理，找出文件名、文件路径
+             */
+            final int position = i;
+            final String fileUri = voiceItemList.get(i).getVoiceUri();
+            int mDivide = fileUri.lastIndexOf(File.separator);
+            final String mFileName = fileUri.substring(mDivide+1);
+
+            AlertDialog.Builder voiceBuilder = new AlertDialog.Builder(mContext);
+            voiceBuilder.setTitle(mFileName);
+            voiceBuilder.setMessage(R.string.voice_delete_message);
+            voiceBuilder.setPositiveButton(R.string.voice_delete_okBut, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    /**
+                     * 删除数据库中记录
+                     */
+                    LitePal.deleteAll(MyVoiceData.class,"voiceName = ?",""+mFileName);
+                    /**
+                     * 删除本地文件
+                     */
+                    File file = new File(fileUri);
+                    if(file.exists()){
+                        file.delete();
+                    }
+                    /**
+                     * 从voiceItemList中移除
+                     */
+                    voiceItemList.remove(position);
+                    /**
+                     * 刷新voiceItemList
+                     */
+                    showVoiceInRecycler(voiceItemList);
+                }
+            });
+            voiceBuilder.setNegativeButton(R.string.voice_delete_cancelBut, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //
+                }
+            });
+            voiceBuilder.create().show();
         }
     }
 }
