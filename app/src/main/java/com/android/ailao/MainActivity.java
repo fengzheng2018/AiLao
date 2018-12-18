@@ -37,7 +37,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private DrawerLayout mDrawLayout;
 
     private FloatingActionButton floatingActionButton;
-    private ZoomControls zoomControls;
     private FloatingActionButton openCamera;
     private FloatingActionButton openMicroPhone;
 
@@ -68,12 +67,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 new ActionBarDrawerToggle(MainActivity.this,mDrawLayout,mToolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
         mDrawLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
-
-        /**
-         * 底部导航栏
-         */
-        BottomNavigationView mBottomNavigationView = findViewById(R.id.BottomNavigation_bottom_container);
-        mBottomNavigationView.setOnNavigationItemSelectedListener(mBottomNavigationViewListener);
     }
 
     @Override
@@ -99,8 +92,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         /**
          * 设置缩放按钮监听
          */
-        zoomControls = findViewById(R.id.zoomControl);
-        zoomControls.setVisibility(View.INVISIBLE);//隐藏
+//        zoomControls = findViewById(R.id.zoomControl);
+//        zoomControls.setVisibility(View.INVISIBLE);//隐藏
 
         /**
          * 设置拍照按钮监听
@@ -149,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     public void showViews(){
         floatingActionButton.show();
-        zoomControls.setVisibility(View.VISIBLE);
+//        zoomControls.setVisibility(View.VISIBLE);
         openCamera.show();
         openMicroPhone.show();
     }
@@ -166,28 +159,6 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         }
         return super.onOptionsItemSelected(item);
     }
-
-    /**
-     * 监听底部导航栏点击事件
-     */
-    private BottomNavigationView.OnNavigationItemSelectedListener mBottomNavigationViewListener
-            = new BottomNavigationView.OnNavigationItemSelectedListener() {
-        @Override
-        public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-            switch (menuItem.getItemId()){
-                case R.id.bottom_tianjia:{
-                    return true;
-                }
-                case R.id.bottom_sousuo:{
-                    return true;
-                }
-                case R.id.bottom_renwu:{
-                    return true;
-                }
-                default:return false;
-            }
-        }
-    };
 
     /**
      * 侧滑栏底部登陆注册按钮监听

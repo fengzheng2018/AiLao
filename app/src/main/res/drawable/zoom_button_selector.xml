@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- 缩放按钮设置点击颜色 -->
+
+    <!-- 默认背景 -->
+    <item android:drawable="@drawable/zoom_button_normal"
+        android:state_pressed="false"/>
+
+    <!-- 点击背景 -->
+    <item android:drawable="@drawable/zoom_button_pressed"
+        android:state_pressed="true"/>
+
+</selector>
