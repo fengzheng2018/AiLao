@@ -23,4 +23,11 @@
     <string name="voice_delete_message">确定要删除这个音频文件吗？</string>
     <string name="voice_delete_okBut">确定</string>
     <string name="voice_delete_cancelBut">取消</string>
+
+    <string name="gps_status_0">GPS○○○○○</string>
+    <string name="gps_status_1">GPS●○○○○</string>
+    <string name="gps_status_2">GPS●●○○○</string>
+    <string name="gps_status_3">GPS●●●○○</string>
+    <string name="gps_status_4">GPS●●●●○</string>
+    <string name="gps_status_5">GPS●●●●●</string>
 </resources>

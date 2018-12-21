@@ -4,7 +4,6 @@ import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
-import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -17,10 +16,14 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ImageButton;
+import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ZoomControls;
 
+import com.android.ailao.gps.GpsHandler;
+import com.android.ailao.gps.GpsProxy;
 import com.android.ailao.map.MapConfig;
+import com.android.ailao.map.MapScaleListener;
 import com.android.ailao.permissions.CheckPermissions;
 import com.android.ailao.picture.MyPicture;
 import com.android.ailao.tools.MyBaseApplication;
@@ -40,10 +43,16 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     private FloatingActionButton openCamera;
     private FloatingActionButton openMicroPhone;
 
+    private ImageButton zoomIn;
+    private ImageButton zoomOut;
+
+    private TextView gpsStatusTxt;
+
     private MyBaseApplication baseApplication;
     private MapConfig mapConfig;
     private long pressTime;
     private MyPicture myPicture;
+    private GpsProxy gpsProxy;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,6 +76,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 new ActionBarDrawerToggle(MainActivity.this,mDrawLayout,mToolbar,R.string.navigation_drawer_open,R.string.navigation_drawer_close);
         mDrawLayout.addDrawerListener(drawerToggle);
         drawerToggle.syncState();
+
+        /**
+         * GPS状态显示
+         */
+        gpsStatusTxt = findViewById(R.id.gps_status_txt);
     }
 
     @Override
@@ -92,8 +106,12 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         /**
          * 设置缩放按钮监听
          */
-//        zoomControls = findViewById(R.id.zoomControl);
-//        zoomControls.setVisibility(View.INVISIBLE);//隐藏
+        zoomIn = findViewById(R.id.mapview_zoom_in);
+        zoomOut = findViewById(R.id.mapview_zoom_out);
+        zoomIn.setVisibility(View.INVISIBLE);
+        zoomOut.setVisibility(View.INVISIBLE);
+        zoomIn.setOnClickListener(actionButtonListener);
+        zoomOut.setOnClickListener(actionButtonListener);
 
         /**
          * 设置拍照按钮监听
@@ -117,6 +135,11 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
         mapConfig = new MapConfig(MainActivity.this,mContext);
 
         /**
+         * 地图比例监听
+         */
+        mMapView.addMapScaleChangedListener(new MapScaleListener(zoomIn,zoomOut));
+
+        /**
          * 初始加载状态
          */
         mapConfig.initMap(mMapView);
@@ -124,6 +147,13 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
          * 加载过程监听
          */
         mapConfig.arcGISMapListener();
+
+        /**
+         * GPS状态显示
+         */
+        GpsHandler gpsHandler = new GpsHandler(gpsStatusTxt);
+        gpsProxy = GpsProxy.getInstance(mContext,MainActivity.this,gpsHandler);
+        gpsProxy.initEnvironment();
     }
 
 
@@ -142,7 +172,8 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
      */
     public void showViews(){
         floatingActionButton.show();
-//        zoomControls.setVisibility(View.VISIBLE);
+        zoomIn.setVisibility(View.VISIBLE);
+        zoomOut.setVisibility(View.VISIBLE);
         openCamera.show();
         openMicroPhone.show();
     }
@@ -218,6 +249,7 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     /**
      * 定位按钮监听
      * 拍照按钮监听
+     * 地图缩放按钮监听
      */
     private View.OnClickListener actionButtonListener = new View.OnClickListener() {
         @Override
@@ -244,6 +276,24 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                         String storeRational = "没有存储权限不能保存音频文件，现在去授予存储权限？";
                         checkStorePermission.requestPermissions(storeRational,storeRequestCode,storeAndReadPermissions);
                     }
+                }
+                case R.id.mapview_zoom_in:{
+                    double mapScale = mMapView.getMapScale();
+                    if(mapScale*0.5 <= 2000.0){
+                        mMapView.setViewpointScaleAsync(2000.0);
+                    }else{
+                        mMapView.setViewpointScaleAsync(mapScale*0.5);
+                    }
+                    break;
+                }
+                case R.id.mapview_zoom_out:{
+                    double mapScale = mMapView.getMapScale();
+                    if(mapScale*2 >= 10000000.0){
+                        mMapView.setViewpointScaleAsync(10000000.0);
+                    }else{
+                        mMapView.setViewpointScaleAsync(mapScale*2);
+                    }
+                    break;
                 }
             }
         }
@@ -331,6 +381,10 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
                 startActivityForResult(intent,704);
                 break;
             }
+            case 807:{
+                gpsProxy.initEnvironment();
+                break;
+            }
         }
     }
 
@@ -363,6 +417,14 @@ public class MainActivity extends AppCompatActivity implements EasyPermissions.P
     protected void onDestroy(){
         super.onDestroy();
         mMapView.dispose();
+
+        //取消GPS监听
+        gpsProxy.removeListener();
+    }
+
+    @Override
+    protected void onStop(){
+        super.onStop();
 
         //取消广播监听
         mapConfig.unRegistLocationChangeReceiver();

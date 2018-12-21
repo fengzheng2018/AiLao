@@ -27,4 +27,11 @@
     <!-- 输入框填充色 -->
     <color name="input_background_color">#000000</color>
 
+    <!-- GPS状态底色 -->
+    <color name="gps_status_bgcolor">#ffffff</color>
+    <!-- GPS状态栏字体颜色 -->
+    <color name="gps_status_color">#000000</color>
+    <!-- GPS无信号提示色 -->
+    <color name="gps_no_signal_color">#ED6A2C</color>
+
 </resources>
