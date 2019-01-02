@@ -40,4 +40,6 @@ dependencies {
     implementation 'top.zibin:Luban:1.1.8'
     //录音库omRecorder依赖
     implementation 'com.kailashdabhi:om-recorder:1.1.5'
+    //okHTTP依赖
+    implementation "com.squareup.okhttp3:okhttp:3.12.0"
 }

@@ -12,6 +12,7 @@
         <mapping class="com.android.ailao.data.MyRecord"/>
         <mapping class="com.android.ailao.data.MyPicture"/>
         <mapping class="com.android.ailao.data.MyVoiceData"/>
+        <mapping class="com.android.ailao.data.MyDescribe" />
     </list>
 
     <!--

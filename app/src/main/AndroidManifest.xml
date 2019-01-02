@@ -56,13 +56,19 @@
         <activity
             android:name=".CollectionInfoActivity"
             android:label="@string/title_activity_collection_info"
-            android:theme="@style/AppTheme.NoActionBar">
-        </activity>
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity
             android:name=".RecordingActivity"
             android:label="@string/title_activity_recording"
-            android:theme="@style/Theme.AppCompat.NoActionBar">
-        </activity>
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <service
+            android:name=".services.UploadService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <service android:name=".services.UploadIntentService" />
+
     </application>
 
 </manifest>

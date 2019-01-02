@@ -28,9 +28,11 @@ import android.widget.Toast;
 import com.android.ailao.data.MyPicture;
 import com.android.ailao.data.MyRecord;
 import com.android.ailao.data.MyVoiceData;
+import com.android.ailao.describe.SaveDescribe;
 import com.android.ailao.permissions.CheckPermissions;
 import com.android.ailao.picture.PictureItem;
 import com.android.ailao.picture.PictureRecyclerView;
+import com.android.ailao.services.UploadService;
 import com.android.ailao.voice.VoiceItem;
 import com.android.ailao.voice.VoiceRecyclerView;
 
@@ -132,7 +134,19 @@ public class CollectionInfoActivity extends AppCompatActivity {
                     break;
                 }
                 case R.id.helper_submit_txt:{
-                    Toast.makeText(mContext,"点击了提交",Toast.LENGTH_SHORT).show();
+                    new Thread(new Runnable() {
+                        @Override
+                        public void run() {
+                            String myText = mEditText.getText().toString();
+                            if(!myText.equals("")){
+                                SaveDescribe saveDescribe = new SaveDescribe();
+                                saveDescribe.saveText(myText);
+                            }
+                        }
+                    }).start();
+
+                    Intent intent = new Intent(CollectionInfoActivity.this, UploadService.class);
+                    startService(intent);
                     break;
                 }
             }
